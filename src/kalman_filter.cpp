@@ -61,16 +61,20 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	// z = rho phi rho dot
 	double rho = sqrt(px*px + py * py);
 	double phi = atan2(py, px);
-	double rhodot = (px*vy + py * vx) / rho;
+	double rhodot = (rho > 0.00000001) ? ((px*vy + py * vx) / rho) : rho;
 
 	VectorXd z_predict(3);
 	z_predict << rho, phi, rhodot;
 
 	VectorXd y = z - z_predict; // the measurement difference in the new coordinate (dimension 3)
 	// consider normalizing the vector y since phi should be within 0 - 2pi
-	double PI = 3.1415926;
-	while (y(1) > PI) y(1) -= 2.*PI;
-	while (y(1) <-PI) y(1) += 2.*PI; 
+	
+	while (y(1) > M_PI || y(1) < M_PI) {
+		if (y(1) > M_PI)
+			y(1) -= 2.* M_PI;
+		else
+			y(1) += 2.* M_PI;
+	}
 
 	// notice that here we should use Hj instead, this will be handled in FusionEKF.cpp
 	MatrixXd Ht = H_.transpose();
