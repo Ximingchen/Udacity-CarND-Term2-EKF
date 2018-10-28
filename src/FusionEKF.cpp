@@ -112,7 +112,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   /*****************************************************************************
    *  Prediction
    ****************************************************************************/
-  cout << "Initialization done..." << endl;
   /**
    TODO:
      * Update the state transition matrix F according to the new elapsed time.
@@ -138,7 +137,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 	  0, dt4*noise_ay, 0, dt3*noise_ay,
 	  dt3*noise_ax, 0, dt2*noise_ax, 0,
 	  0, dt3*noise_ay, 0, dt2*noise_ay;
-  cout << "Predicting..." << endl;
+  
   ekf_.Predict();
 
   /*****************************************************************************
@@ -150,14 +149,17 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Use the sensor type to perform the update step.
      * Update the state and covariance matrices.
    */
-  cout << "Finished Prediction" << endl;
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-	  cout << "calculating jacobian" << endl;
-	  ekf_.H_ = tools.CalculateJacobian(ekf_.x_); // notice that this is Hj
-	  cout << "Jacobian obtained" << endl;
-	  ekf_.R_ = R_radar_;
-	  ekf_.UpdateEKF(measurement_pack.raw_measurements_);
+	  try {
+		  ekf_.R_ = R_radar_;
+		  ekf_.H_ = tools.CalculateJacobian(ekf_.x_); // notice that this is Hj
+		  ekf_.UpdateEKF(measurement_pack.raw_measurements_);
+	  }
+	  catch (...) {
+		  return;
+	  }
+	  
   } else {
     // Laser updates
 	  ekf_.H_ = H_laser_;

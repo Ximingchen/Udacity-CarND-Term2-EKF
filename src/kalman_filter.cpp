@@ -76,7 +76,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	MatrixXd Ht = H_.transpose();
 	MatrixXd S = H_* P_ * Ht + R_;
 	MatrixXd Si = S.inverse();
-	MatrixXd K = P_ * H_ * Si; // calculate Kalman gain
+	MatrixXd K = P_ * Ht * Si; // calculate Kalman gain
 
 	int dim = x_.size();
 	MatrixXd I = MatrixXd::Identity(dim, dim);
