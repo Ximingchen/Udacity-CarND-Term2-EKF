@@ -104,6 +104,10 @@ int main()
     	  gt_values(3) = vy_gt;
     	  ground_truth.push_back(gt_values);
           //Call ProcessMeasurment(meas_package) for Kalman filter
+		  cout << "Number of samples "<< meas_package.raw_measurements_.size() << endl;
+		  for(int i = 0; i < meas_package.raw_measurements_.size(); i++)
+			  cout << meas_package.raw_measurements_(i) << endl;
+
     	  fusionEKF.ProcessMeasurement(meas_package);    	  
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
@@ -123,7 +127,6 @@ int main()
     	  estimations.push_back(estimate);
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
-		  cout << RMSE(0) << endl;
           json msgJson;
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
