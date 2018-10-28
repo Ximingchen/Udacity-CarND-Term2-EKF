@@ -24,9 +24,8 @@ void KalmanFilter::Predict() {
   TODO:
     * predict the state
   */
-	x_ = F_ * x_; // update x (k+1|k)
-	MatrixXd Ft = F_.transpose(); 
-	P_ = F_ * P_ * Ft + Q_; // update to get P(k+1|k)
+	x_ = F_ * x_; // update x (k+1|k) 
+	P_ = F_ * P_ * F_.transpose() + Q_; // update to get P(k+1|k)
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
@@ -54,14 +53,14 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   */
   // the same procedure as above but replacing the H function with Hj
 	// first compute the predicted x in z coordinate
-	double px = x_(0);
-	double py = x_(1);
-	double vx = x_(2);
-	double vy = x_(3);
+	float px = x_(0);
+	float py = x_(1);
+	float vx = x_(2);
+	float vy = x_(3);
 	// z = rho phi rho dot
-	double rho = sqrt(px*px + py * py);
-	double phi = atan2(py, px);
-	double rhodot = (rho > 0.00000001) ? ((px*vy + py * vx) / rho) : rho;
+	float rho = sqrt(px*px + py * py);
+	float phi = atan2(py, px);
+	float rhodot = (rho > 0.0000001) ? ((px*vy + py * vx) / rho) : rho;
 
 	VectorXd z_predict(3);
 	z_predict << rho, phi, rhodot;

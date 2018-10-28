@@ -90,10 +90,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       Convert radar from polar to cartesian coordinates and initialize state.
       */
 		cout << "First sample: Radar" << endl;
-		double rho = measurement_pack.raw_measurements_[0];
-		double phi = measurement_pack.raw_measurements_[1];
-		double px = rho * cos(phi);
-		double py = rho * sin(phi);
+		float rho = measurement_pack.raw_measurements_[0];
+		float phi = measurement_pack.raw_measurements_[1];
+		float px = rho * cos(phi);
+		float py = rho * sin(phi);
 		ekf_.x_ << px, py, 0, 0;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
@@ -119,18 +119,18 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Update the process noise covariance matrix.
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
-  double noise_ax = 9.0;
-  double noise_ay = 9.0;
-  double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+  float noise_ax = 9.0;
+  float noise_ay = 9.0;
+  float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
   previous_timestamp_ = measurement_pack.timestamp_; // update the time stamp
   ekf_.F_ << 1, 0, dt, 0,
 			0, 1, 0, dt,
 			0, 0, 1, 0,
 			0, 0, 0, 1;
   //2. Set the process covariance matrix Q
-  double dt4 = dt *dt*dt*dt / 4.0;
-  double dt3 = dt * dt*dt / 2.0;
-  double dt2 = dt * dt;
+  float dt4 = dt *dt*dt*dt / 4.0;
+  float dt3 = dt * dt*dt / 2.0;
+  float dt2 = dt * dt;
 
   //set the process covariance matrix Q
   ekf_.Q_ = MatrixXd(4, 4);
