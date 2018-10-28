@@ -59,7 +59,7 @@ FusionEKF::FusionEKF() {
 
   VectorXd x_ = VectorXd(4);
   x_ << 1, 1, 1, 1;
-  ekf_.Init(x_, P_, F_, H_laser_, R_laser_, Q_);
+  ekf_.Init(x_, P_, F_, H_laser_, R_laser_, Q_); // segmentation error will be created without proper initialization
 }
 
 /**
