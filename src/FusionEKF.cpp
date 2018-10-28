@@ -69,20 +69,19 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
+		cout << "First sample: Radar" << endl;
 		double rho = measurement_pack.raw_measurements_[0];
 		double phi = measurement_pack.raw_measurements_[1];
-		double rhodot = measurement_pack.raw_measurements_[2];
 
 		double px = rho * cos(phi);
 		double py = rho * sin(phi);
-		double vx = rhodot * cos(phi);
-		double vy = rhodot * sin(phi); // notice that vx and vy are approximate values
-		ekf_.x_ << px, py, vx, vy;
+		ekf_.x_ << px, py, 0, 0;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
       Initialize state.
       */
+		cout << "First sample: Laser" << endl;
 		ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
     }
 	previous_timestamp_ = measurement_pack.timestamp_; // update the time-stamp
