@@ -36,10 +36,30 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     * Set the process and measurement noises
   */
-  ekf_.P_ = MatrixXd::Identity(4, 4);
-  H_laser_ << 1, 0, 0, 0,
-			0, 1, 0, 0;
 
+  H_laser_ << 1, 0, 0, 0,
+				0, 1, 0, 0;
+  MatrixXd P_ = MatrixXd(4, 4);
+  P_ << 1, 0, 0, 0,
+	  0, 1, 0, 0,
+	  0, 0, 1, 0,
+	  0, 0, 0, 1;
+
+  MatrixXd F_ = MatrixXd(4, 4);
+  F_ << 1, 0, 0, 0,
+	  0, 1, 0, 0,
+	  0, 0, 1, 0,
+	  0, 0, 0, 1;
+
+  MatrixXd Q_ = MatrixXd(4, 4);
+  Q_ << 1, 0, 1, 0,
+	  0, 1, 0, 1,
+	  1, 0, 1, 0,
+	  0, 1, 0, 1;
+
+  VectorXd x_ = VectorXd(4);
+  x_ << 1, 1, 1, 1;
+  ekf_.Init(x_, P_, F_, H_laser_, R_laser_, Q_);
 }
 
 /**
@@ -83,18 +103,16 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 		cout << "First sample: Laser" << endl;
 		ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
     }
-	cout << "Finish if." << endl;
 	previous_timestamp_ = measurement_pack.timestamp_;// update the time-stamp
     // done initializing, no need to predict or update
     is_initialized_ = true;
-	cout << "Done initialization" << endl;
     return;
   }
 
   /*****************************************************************************
    *  Prediction
    ****************************************************************************/
-
+  cout << "Initialization done..." << endl;
   /**
    TODO:
      * Update the state transition matrix F according to the new elapsed time.
