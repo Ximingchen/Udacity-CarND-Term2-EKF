@@ -26,9 +26,8 @@ void KalmanFilter::Predict() {
   TODO:
     * predict the state
   */
-	MatrixXd Ft = H_.transpose();
 	x_ = F_ * x_; // update x (k+1|k)
-	MatrixXd Ft = F.transpose(); 
+	MatrixXd Ft = F_.transpose(); 
 	P_ = F_ * P_ * Ft + Q_; // update to get P(k+1|k)
 }
 
@@ -81,6 +80,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	MatrixXd Si = S.inverse();
 	MatrixXd K = P_ * H_ * Si; // calculate Kalman gain
 
+	int dim = x_.size();
+	MatrixXd I = MatrixXd::Identity(dim, dim);
 	x_ = x_ + (K * y);
 	P_ = (I - K * H_) * P_;
 }
