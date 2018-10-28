@@ -72,7 +72,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 		cout << "First sample: Radar" << endl;
 		double rho = measurement_pack.raw_measurements_[0];
 		double phi = measurement_pack.raw_measurements_[1];
-
 		double px = rho * cos(phi);
 		double py = rho * sin(phi);
 		ekf_.x_ << px, py, 0, 0;
@@ -119,7 +118,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 	  0, dt4*noise_ay, 0, dt3*noise_ay,
 	  dt3*noise_ax, 0, dt2*noise_ax, 0,
 	  0, dt3*noise_ay, 0, dt2*noise_ay;
-
+  cout << "Predicting..." << endl;
   ekf_.Predict();
 
   /*****************************************************************************
@@ -131,7 +130,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Use the sensor type to perform the update step.
      * Update the state and covariance matrices.
    */
-
+  cout << "Finished Prediction" << endl;
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
 	  cout << "calculating jacobian" << endl;
