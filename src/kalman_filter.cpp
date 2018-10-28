@@ -48,12 +48,12 @@ void KalmanFilter::Update(const VectorXd &z) {
 	P_ = (I - K * H_) * P_;
 }
 
-/*
+
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
   TODO:
     * update the state by using Extended Kalman Filter equations
-  
+  */
   // the same procedure as above but replacing the H function with Hj
 	// first compute the predicted x in z coordinate
 	float px = x_(0);
@@ -77,8 +77,6 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 		else
 			y(1) += 2.* M_PI;
 	}
-	
-
 	// notice that here we should use Hj instead, this will be handled in FusionEKF.cpp
 	MatrixXd Ht = H_.transpose();
 	MatrixXd S = H_* P_ * Ht + R_;
@@ -88,42 +86,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	int dim = x_.size();
 	MatrixXd I = MatrixXd::Identity(dim, dim);
 	x_ = x_ + (K * y);
-	P_ = (I - K * H_) * P_;
-}
-*/
-void KalmanFilter::UpdateEKF(const VectorXd &z) {
-	// update the state by using Extended Kalman Filter equations
-
-	// get components of predicted state
-	float px = x_(0);
-	float py = x_(1);
-	float vx = x_(2);
-	float vy = x_(3);
-
-	// get components of radar measurement space
-	float rho = sqrt(px * px + py * py);
-	float phi = atan2(py, px);
-	float rho_dot = (rho != 0 ? (px * vx + py * vy) / rho : 0);
-
-	// define predicted position and speed
-	VectorXd z_pred(3);
-	z_pred << rho, phi, rho_dot;
-
-	// measurement update
-	VectorXd y = z - z_pred;
-
-	// normalize angle
-	double width = 2 * M_PI;   //
-	double offsetValue = y(1) + M_PI;   // value relative to 0
-	y(1) = (offsetValue - (floor(offsetValue / width) * width)) - M_PI;
-
-	MatrixXd PHt = P_ * H_.transpose();
-	MatrixXd S = H_ * PHt + R_;
-	MatrixXd K = PHt * S.inverse();
-
-	// new state
-	x_ = x_ + (K * y);
-	int x_size = x_.size();
-	MatrixXd I = MatrixXd::Identity(x_size, x_size);
 	P_ = (I - K * H_) * P_;
 }
