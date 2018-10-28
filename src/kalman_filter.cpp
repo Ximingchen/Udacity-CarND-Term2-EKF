@@ -67,17 +67,14 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
 	VectorXd y = z - z_predict; // the measurement difference in the new coordinate (dimension 3)
 	// consider normalizing the vector y since phi should be within 0 - 2pi
-	/*
+	
 	while (y(1) > M_PI || y(1) < -M_PI) {
 		if (y(1) > M_PI)
 			y(1) -= 2.* M_PI;
 		else
 			y(1) += 2.* M_PI;
 	}
-	*/
-	double width = 2 * M_PI;   //
-	double offsetValue = y(1) + M_PI;   // value relative to 0
-	y(1) = (offsetValue - (floor(offsetValue / width) * width)) - M_PI;
+	
 
 	// notice that here we should use Hj instead, this will be handled in FusionEKF.cpp
 	MatrixXd Ht = H_.transpose();
