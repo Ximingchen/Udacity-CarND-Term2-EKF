@@ -63,7 +63,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	// z = rho phi rho dot
 	float rho = sqrt(px*px + py * py);
 	float phi = atan2(py, px);
-	float rhodot = (rho > 0.0000001) ? ((px*vy + py * vx) / rho) : rho;
+	float rhodot = (rho > 0.0000001) ? ((px*vx + py * vy) / rho) : rho;
 
 	VectorXd z_predict(3);
 	z_predict << rho, phi, rhodot;
@@ -78,13 +78,14 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 			y(1) += 2.* M_PI;
 	}
 	// notice that here we should use Hj instead, this will be handled in FusionEKF.cpp
+
 	MatrixXd Ht = H_.transpose();
-	MatrixXd S = H_* P_ * Ht + R_;
+	MatrixXd S = H_ * P_ * Ht + R_;
 	MatrixXd Si = S.inverse();
 	MatrixXd K = P_ * Ht * Si; // calculate Kalman gain
 
 	int dim = x_.size();
-	MatrixXd I = MatrixXd::Identity(dim, dim);
+	MatrixXd I = MatrixXd::Identity(dim, dim); // define the identity matrix
 	x_ = x_ + (K * y);
 	P_ = (I - K * H_) * P_;
 }
